@@ -37,51 +37,83 @@ public class MinecraftLanguage extends CustomAssembly{
 
     @Override
     protected void populate(){
+      instructionList.add(
+         new BasicInstruction("itmadd $t1,$t1, 32",
+          "Add # of items to your stack in your hotbar",
+         BasicInstructionFormat.I_FORMAT,
+         "000001 00000 01001 0000000000000000",
+         new SimulationCode()
+        {
+            public void simulate(ProgramStatement statement) throws ProcessingException
+           {
+              int[] operands = statement.getOperands();
+              int destnReg = operands[0];
+              int add1 = operands[2]; // imm
+              int add2 = RegisterFile.getValue(destnReg);
+              int sum = add1 + add2;
+           // overflow on A+B detected when A and B have same sign and A+B has other sign.
+              if ((add1 >= 0 && add2 >= 0 && sum < 0)
+                 || (add1 < 0 && add2 < 0 && sum >= 0))
+              {
+                 throw new ProcessingException(statement,
+                     "arithmetic overflow",Exceptions.ARITHMETIC_OVERFLOW_EXCEPTION);
+              }
+              RegisterFile.updateRegister(operands[0], sum);
+           }
+        }));
+      instructionList.add(
+         new BasicInstruction("itmmul $t1,$t1, 2",
+          "multiply an item in your hotbar by specified factor",
+         BasicInstructionFormat.I_FORMAT,
+         "000011 01001 01001 0000000000000000",
+         new SimulationCode()
+        {
+            public void simulate(ProgramStatement statement) throws ProcessingException
+           {
+              int[] operands = statement.getOperands();
+              int destnReg = operands[0];
+              int add1 = operands[2]; // imm
+              int add2 = RegisterFile.getValue(destnReg);
+              int prod = add1 * add2;
+           // overflow on A+B detected when A and B have same sign and A+B has other sign.
+              if ((add1 < 0 && add2 >= 0 && prod < 0)
+                 || (add1 >= 0 && add2 < 0 && prod >= 0))
+              {
+                 throw new ProcessingException(statement,
+                     "arithmetic overflow",Exceptions.ARITHMETIC_OVERFLOW_EXCEPTION);
+              }
+              if (prod > 64) {
+                  prod = 64;
+              }
+              RegisterFile.updateRegister(operands[0], prod);
+              }
+            }));
         instructionList.add(
-                new BasicInstruction("add $t1,$t2,$t3",
-            	 "Addition with overflow : set $t1 to ($t2 plus $t3)",
-                BasicInstructionFormat.R_FORMAT,
-                "000000 sssss ttttt fffff 00000 100000",
-                new SimulationCode()
-               {
-                   public void simulate(ProgramStatement statement) throws ProcessingException
-                  {
-                     int[] operands = statement.getOperands();
-                     int add1 = RegisterFile.getValue(operands[1]);
-                     int add2 = RegisterFile.getValue(operands[2]);
-                     int sum = add1 + add2;
-                  // overflow on A+B detected when A and B have same sign and A+B has other sign.
-                     if ((add1 >= 0 && add2 >= 0 && sum < 0)
-                        || (add1 < 0 && add2 < 0 && sum >= 0))
-                     {
-                        throw new ProcessingException(statement,
-                            "arithmetic overflow",Exceptions.ARITHMETIC_OVERFLOW_EXCEPTION);
-                     }
-                     RegisterFile.updateRegister(operands[0], sum);
-                  }
-               }));
-         instructionList.add(
-                new BasicInstruction("addi $t1,$t2,-100",
-            	 "Addition immediate with overflow : set $t1 to ($t2 plus signed 16-bit immediate)",
-                BasicInstructionFormat.I_FORMAT,
-                "001000 sssss fffff tttttttttttttttt",
-                new SimulationCode()
-               {
-                   public void simulate(ProgramStatement statement) throws ProcessingException
-                  {
-                     int[] operands = statement.getOperands();
-                     int add1 = RegisterFile.getValue(operands[1]);
-                     int add2 = operands[2] << 16 >> 16;
-                     int sum = add1 + add2;
-                  // overflow on A+B detected when A and B have same sign and A+B has other sign.
-                     if ((add1 >= 0 && add2 >= 0 && sum < 0)
-                        || (add1 < 0 && add2 < 0 && sum >= 0))
-                     {
-                        throw new ProcessingException(statement,
-                            "arithmetic overflow",Exceptions.ARITHMETIC_OVERFLOW_EXCEPTION);
-                     }
-                     RegisterFile.updateRegister(operands[0], sum);
-                  }
+         new BasicInstruction("drop $t1,$t1, 32",
+          "Drop # of items from your hotbar",
+         BasicInstructionFormat.I_FORMAT,
+         "000010 01001 01001 0000000000000000",
+         new SimulationCode()
+        {
+            public void simulate(ProgramStatement statement) throws ProcessingException
+           {
+              int[] operands = statement.getOperands();
+              int destnReg = operands[0];
+              int add1 = operands[2]; // imm
+              int add2 = RegisterFile.getValue(destnReg);
+              int differn = add2 - add1;
+           // overflow on A+B detected when A and B have same sign and A+B has other sign.
+              if ((add1 < 0 && add2 >= 0 && differn < 0)
+                 || (add1 >= 0 && add2 < 0 && differn >= 0))
+              {
+                 throw new ProcessingException(statement,
+                     "arithmetic overflow",Exceptions.ARITHMETIC_OVERFLOW_EXCEPTION);
+              }
+              if (differn < 0) {
+                  differn = 0;
+              }
+                  RegisterFile.updateRegister(operands[0], differn);
+                 }
                }));
         instructionList.add(
                 new BasicInstruction("jump target", 
