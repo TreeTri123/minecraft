@@ -72,23 +72,25 @@ public class MinecraftLanguage extends CustomAssembly{
            {
               int[] operands = statement.getOperands();
               int destnReg = operands[0];
-              int add1 = operands[2]; // imm
-              int add2 = RegisterFile.getValue(destnReg);
-              int prod = add1 * add2;
+              int factor = operands[2]; // imm
+              int amt = RegisterFile.getValue(destnReg);
+              int prod = factor * amt;
            // overflow on A+B detected when A and B have same sign and A+B has other sign.
-              if ((add1 < 0 && add2 >= 0 && prod < 0)
-                 || (add1 >= 0 && add2 < 0 && prod >= 0))
+              if (factor < 0 || amt < 0)
               {
                  throw new ProcessingException(statement,
-                     "arithmetic overflow",Exceptions.ARITHMETIC_OVERFLOW_EXCEPTION);
+                     "negative factor or amount not allowed",Exceptions.ARITHMETIC_OVERFLOW_EXCEPTION);
               }
               if (prod > 64) {
                   prod = 64;
               }
+              if (prod < 0) {
+                  prod = 0;
+              }
               RegisterFile.updateRegister(operands[0], prod);
               }
             }));
-        instructionList.add(
+      instructionList.add(
          new BasicInstruction("drop $t1,$t1, 32",
           "Drop # of items from your hotbar",
          BasicInstructionFormat.I_FORMAT,
@@ -116,10 +118,10 @@ public class MinecraftLanguage extends CustomAssembly{
                  }
                }));
         instructionList.add(
-                new BasicInstruction("jump target", 
-            	 "Jump unconditionally : Jump to statement at target address",
+                new BasicInstruction("switch target", 
+            	 "switch to the wanted hotbar slot $t1-$t9",
             	 BasicInstructionFormat.J_FORMAT,
-                "000010 ffffffffffffffffffffffffff",
+                "000110 01001 00000 0000000000000000",
                 new SimulationCode()
                {
                    public void simulate(ProgramStatement statement) throws ProcessingException
