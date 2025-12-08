@@ -246,6 +246,34 @@ public class MinecraftLanguage extends CustomAssembly{
                }
          }));
       instructionList.add(
+         new BasicInstruction("atck imm",
+         "attacks entity in front of player for imm amount of clicks",
+         BasicInstructionFormat.J_FORMAT,
+         "101001 00000 00000 0000000000000000",
+         new SimulationCode()
+            {
+               public void simulate(ProgramStatement statement) throws ProcessingException
+               {
+                  int[] operands = statement.getOperands();
+                  int time = operands[0]; // immediate
+                  System.out.println("Attacking entity for " + time + " clicks.");
+                  }
+         }));
+      instructionList.add(
+         new BasicInstruction("turn imm",
+            "rotate the player's view by imm of degrees",
+            BasicInstructionFormat.J_FORMAT,
+            "101010 00000 00000 0000000000000000",
+            new SimulationCode() 
+            {
+               public void simulate(ProgramStatement statement) throws ProcessingException
+               {
+                  int[] operands = statement.getOperands();
+                  int degrees = operands[0]; // immediate
+                  System.out.println("Turning player view by " + degrees + " degrees.");
+               }
+            }));
+      instructionList.add(
                 new BasicInstruction("print $t1, label",
             	 "example",
                 BasicInstructionFormat.I_BRANCH_FORMAT,
