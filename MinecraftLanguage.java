@@ -153,7 +153,7 @@ public class MinecraftLanguage extends CustomAssembly{
             }));
       instructionList.add(
          new BasicInstruction("walk imm",
-         "walks forward for imm amount of time",
+         "walks forward for imm amount of time (press w)",
          BasicInstructionFormat.J_FORMAT,
          "100001 00000 00000 0000000000000000",
          new SimulationCode()
@@ -167,7 +167,7 @@ public class MinecraftLanguage extends CustomAssembly{
          }));
       instructionList.add(
          new BasicInstruction("jump",
-         "jumps",
+         "jumps (press jump)",
          BasicInstructionFormat.J_FORMAT,
          "100010 00000 00000 0000000000000000",
          new SimulationCode()
@@ -178,6 +178,20 @@ public class MinecraftLanguage extends CustomAssembly{
                }
          }));
       instructionList.add(
+         new BasicInstruction("Eat imm",
+         "eats food in hand for imm amount of seconds",
+         BasicInstructionFormat.J_FORMAT,
+         "100100 00000 00000 0000000000000000",
+         new SimulationCode()
+            {
+               public void simulate(ProgramStatement statement) throws ProcessingException
+               {
+                  int[] operands = statement.getOperands();
+                  int time = operands[0]; // immediate
+                  System.out.println("Eating food for " + time + " seconds.");
+               }
+         }));
+         instructionList.add(
                 new BasicInstruction("print $t1, label",
             	 "example",
                 BasicInstructionFormat.I_BRANCH_FORMAT,
