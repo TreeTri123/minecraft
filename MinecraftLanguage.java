@@ -221,7 +221,7 @@ public class MinecraftLanguage extends CustomAssembly{
          }));
       instructionList.add(
          new BasicInstruction("interact",
-            "interact with an object one time",
+         "interact with an object one time",
          BasicInstructionFormat.J_FORMAT,
          "100111 00000 00000 0000000000000000",
          new SimulationCode() 
@@ -233,9 +233,9 @@ public class MinecraftLanguage extends CustomAssembly{
             }));
       instructionList.add(
          new BasicInstruction("clmb imm",
-            "goes up ladder for imm amount of seconds"
+         "goes up ladder for imm amount of seconds",
          BasicInstructionFormat.J_FORMAT,
-         "101000 00000 00000 0000000000000000"
+         "101000 00000 00000 0000000000000000",
          new SimulationCode()
             {
                public void simulate(ProgramStatement statement) throws ProcessingException
