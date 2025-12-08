@@ -91,6 +91,24 @@ public class MinecraftLanguage extends CustomAssembly{
               }
             }));
       instructionList.add(
+         new BasicInstruction("give $t1, item_id",
+            "takes minecraft item id and loads them into your hotbar slot",
+         BasicInstructionFormat.I_FORMAT,
+         "000100 01001 00000 0000000000000000",
+         new SimulationCode()
+         {
+               public void simulate(ProgramStatement statement) throws ProcessingException
+             {
+               int[] operands = statement.getOperands();
+               
+               //get the item id as a immediate value
+               int item_id = operands[1]; // immediate
+               //Store item id directly into that register
+               RegisterFile.updateRegister(operands[0], item_id);
+               System.out.println("Gave item with ID: " + item_id + " to hotbar slot.");
+               }  
+          }));
+      instructionList.add(
          new BasicInstruction("drop $t1,$t1, 32",
           "Drop # of items from your hotbar",
          BasicInstructionFormat.I_FORMAT,
