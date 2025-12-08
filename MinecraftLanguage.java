@@ -191,7 +191,35 @@ public class MinecraftLanguage extends CustomAssembly{
                   System.out.println("Eating food for " + time + " seconds.");
                }
          }));
-         instructionList.add(
+      instructionList.add(
+         new BasicInstruction("swim imm",
+         "swim forward for imm amount of seconds",    
+         BasicInstructionFormat.J_FORMAT,
+         "100101 00000 00000 0000000000000000",
+         new SimulationCode()
+            {
+               public void simulate(ProgramStatement statement) throws ProcessingException
+               {
+                  int[] operands = statement.getOperands();
+                  int time = operands[0]; // immediate
+                  System.out.println("Swimming forward for " + time + " seconds.");
+               }
+         }));
+      instructionList.add(
+         new BasicInstruction("break imm",
+         "mines block in front of player for imm amount of seconds",
+         BasicInstructionFormat.J_FORMAT,
+         "100110 00000 00000 0000000000000000",
+         new SimulationCode()
+            {
+               public void simulate(ProgramStatement statement) throws ProcessingException
+               {
+                  int[] operands = statement.getOperands();
+                  int time = operands[0]; // immediate
+                  System.out.println("Mining block for " + time + " seconds.");
+               }
+         }));
+      instructionList.add(
                 new BasicInstruction("print $t1, label",
             	 "example",
                 BasicInstructionFormat.I_BRANCH_FORMAT,
