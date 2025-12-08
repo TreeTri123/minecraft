@@ -135,22 +135,36 @@ public class MinecraftLanguage extends CustomAssembly{
                   RegisterFile.updateRegister(operands[0], differn);
                  }
                }));
-        instructionList.add(
-                new BasicInstruction("switch target", 
-            	 "switch to the wanted hotbar slot $t1-$t9",
-            	 BasicInstructionFormat.J_FORMAT,
-                "000110 01001 00000 0000000000000000",
-                new SimulationCode()
+      instructionList.add(
+         new BasicInstruction("switch target", 
+         "switch to the wanted hotbar slot $t1-$t9",
+         BasicInstructionFormat.J_FORMAT,
+         "000110 01001 00000 0000000000000000",
+         new SimulationCode()
+         {
+            public void simulate(ProgramStatement statement) throws ProcessingException
+            {
+               int[] operands = statement.getOperands();
+               RegisterFile.updateRegister("$t1", operands[0]);
+               Globals.instructionSet.processJump(
+                  ((RegisterFile.getProgramCounter() & 0xF0000000)
+                  | (operands[0] << 2)));            
+               }
+            }));
+      instructionList.add(
+         new BasicInstruction("walk imm",
+         "walks forward for imm amount of time",
+         BasicInstructionFormat.J_FORMAT,
+         "100001 00000 00000 0000000000000000",
+         new SimulationCode()
+            {
+               public void simulate(ProgramStatement statement) throws ProcessingException
                {
-                   public void simulate(ProgramStatement statement) throws ProcessingException
-                  {
-                     int[] operands = statement.getOperands();
-                     RegisterFile.updateRegister("$t1", operands[0]);
-                     Globals.instructionSet.processJump(
-                        ((RegisterFile.getProgramCounter() & 0xF0000000)
-                                | (operands[0] << 2)));            
-                  }
-               }));
+                  int[] operands = statement.getOperands();
+                  int time = operands[0]; // immediate
+                  System.out.println("Walking forward for " + time + " seconds.");
+               }
+         }));
       instructionList.add(
                 new BasicInstruction("print $t1, label",
             	 "example",
