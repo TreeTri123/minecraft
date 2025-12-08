@@ -166,6 +166,18 @@ public class MinecraftLanguage extends CustomAssembly{
                }
          }));
       instructionList.add(
+         new BasicInstruction("jump",
+         "jumps",
+         BasicInstructionFormat.J_FORMAT,
+         "100010 00000 00000 0000000000000000",
+         new SimulationCode()
+            {
+               public void simulate(ProgramStatement statement) throws ProcessingException
+               {
+                  System.out.println("Jumping!");
+               }
+         }));
+      instructionList.add(
                 new BasicInstruction("print $t1, label",
             	 "example",
                 BasicInstructionFormat.I_BRANCH_FORMAT,
