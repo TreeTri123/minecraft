@@ -220,6 +220,18 @@ public class MinecraftLanguage extends CustomAssembly{
                }
          }));
       instructionList.add(
+         new BasicInstruction("interact",
+            "interact with an object one time",
+         BasicInstructionFormat.J_FORMAT,
+         "100111 00000 00000 0000000000000000",
+         new SimulationCode() 
+            {
+               public void simulate(ProgramStatement statement) throws ProcessingException
+               {
+                  System.out.println("Interacting with object.");
+               }
+            }));
+      instructionList.add(
                 new BasicInstruction("print $t1, label",
             	 "example",
                 BasicInstructionFormat.I_BRANCH_FORMAT,
