@@ -232,6 +232,20 @@ public class MinecraftLanguage extends CustomAssembly{
                }
             }));
       instructionList.add(
+         new BasicInstruction("clmb imm",
+            "goes up ladder for imm amount of seconds"
+         BasicInstructionFormat.J_FORMAT,
+         "101000 00000 00000 0000000000000000"
+         new SimulationCode()
+            {
+               public void simulate(ProgramStatement statement) throws ProcessingException
+               {
+                  int[] operands = statement.getOperands();
+                  int time = operands[0]; // immediate
+                  System.out.println("Climbing ladder for " + time + " seconds.");
+               }
+         }));
+      instructionList.add(
                 new BasicInstruction("print $t1, label",
             	 "example",
                 BasicInstructionFormat.I_BRANCH_FORMAT,
