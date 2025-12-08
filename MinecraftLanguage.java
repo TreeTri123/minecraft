@@ -144,13 +144,81 @@ public class MinecraftLanguage extends CustomAssembly{
          {
             public void simulate(ProgramStatement statement) throws ProcessingException
             {
-               int[] operands = statement.getOperands();
-               RegisterFile.updateRegister("$t1", operands[0]);
-               Globals.instructionSet.processJump(
-                  ((RegisterFile.getProgramCounter() & 0xF0000000)
-                  | (operands[0] << 2)));            
+               System.out.println("Switching hotbar slots");          
                }
-            }));
+         }));
+      instructionList.add(
+         new BasicInstruction("sr imm", 
+         "Scroll right on your hotbar a # of times",
+         BasicInstructionFormat.I_FORMAT,
+         "000101 00000 00000 0000000000000000",
+         new SimulationCode()
+         {
+            public void simulate(ProgramStatement statement) throws ProcessingException
+            {
+               int[] operands = statement.getOperands();
+               int ticks = operands[0]; // immediate
+               System.out.println("Scrolling right on hotbar " + ticks + " times");         
+               }
+         }));
+      instructionList.add(
+         new BasicInstruction("sl imm", 
+         "Scroll left on your hotbar a # of times",
+         BasicInstructionFormat.I_FORMAT,
+         "000110 00000 00000 0000000000000000",
+         new SimulationCode()
+         {
+            public void simulate(ProgramStatement statement) throws ProcessingException
+            {
+               int[] operands = statement.getOperands();
+               int ticks = operands[0]; // immediate
+               System.out.println("Scrolling left on hotbar " + ticks + " times");         
+               }
+         }));
+         //CHECK
+      instructionList.add(
+         new BasicInstruction("clear", 
+         "Clear all items from your inventory",
+         BasicInstructionFormat.R_FORMAT,
+         "000111 00000 00000 0000000000000000",
+         new SimulationCode()
+         {
+            public void simulate(ProgramStatement statement) throws ProcessingException
+            {
+               int[] hotbarRegs = {9, 10, 11, 12, 13, 14, 15, 24, 25};
+               for (int reg : hotbarRegs) {
+                  RegisterFile.updateRegister(reg,0);
+               }
+            }
+         }));
+      instructionList.add(
+         new BasicInstruction("xp imm", 
+         "Give # amount of experience levels to oneself",
+         BasicInstructionFormat.I_FORMAT,
+         "001000 00000 00000 0000000000000000",
+         new SimulationCode()
+         {
+            public void simulate(ProgramStatement statement) throws ProcessingException
+            {
+               int[] operands = statement.getOperands();
+               int levels = operands[0]; // immediate
+               System.out.println("Giving " + levels + " levels to player");         
+               }
+         }));
+      instructionList.add(
+         new BasicInstruction("incspd imm", 
+         "increase speed of player by specified amplifier",
+         BasicInstructionFormat.I_FORMAT,
+         "001001 00000 00000 0000000000000000",
+         new SimulationCode()
+         {
+            public void simulate(ProgramStatement statement) throws ProcessingException
+            {
+               int[] operands = statement.getOperands();
+               int amp = operands[0]; // immediate
+               System.out.println("Increasing speed by amplifier of " + amp);         
+               }
+         }));
       instructionList.add(
          new BasicInstruction("walk imm",
          "walks forward for imm amount of time (press w)",
@@ -178,7 +246,21 @@ public class MinecraftLanguage extends CustomAssembly{
                }
          }));
       instructionList.add(
-         new BasicInstruction("Eat imm",
+         new BasicInstruction("run imm",
+         "runs forward for imm amount of time (press w and control)",
+         BasicInstructionFormat.J_FORMAT,
+         "100011 00000 00000 0000000000000000",
+         new SimulationCode()
+            {
+               public void simulate(ProgramStatement statement) throws ProcessingException
+               {
+                  int[] operands = statement.getOperands();
+                  int time = operands[0]; // immediate
+                  System.out.println("Running forward for " + time + " seconds.");
+               }
+         }));
+      instructionList.add(
+         new BasicInstruction("eat imm",
          "eats food in hand for imm amount of seconds",
          BasicInstructionFormat.J_FORMAT,
          "100100 00000 00000 0000000000000000",
@@ -230,7 +312,7 @@ public class MinecraftLanguage extends CustomAssembly{
                {
                   System.out.println("Interacting with object.");
                }
-            }));
+         }));
       instructionList.add(
          new BasicInstruction("clmb imm",
          "goes up ladder for imm amount of seconds",
@@ -272,60 +354,6 @@ public class MinecraftLanguage extends CustomAssembly{
                   int degrees = operands[0]; // immediate
                   System.out.println("Turning player view by " + degrees + " degrees.");
                }
-            }));
-      instructionList.add(
-                new BasicInstruction("print $t1, label",
-            	 "example",
-                BasicInstructionFormat.I_BRANCH_FORMAT,
-                "110000 fffff 00000 ssssssssssssssss",
-                new SimulationCode()
-               {
-                   public void simulate(ProgramStatement statement) throws ProcessingException
-                  {
-                     int[] operands = statement.getOperands();             
-                     char ch = 0;
-                     // Get the name of the label from the token list
-                     String label = statement.getOriginalTokenList().get(2).getValue();
-                     // Look up the label in the program symbol table to get its address
-                     int byteAddress = Globals.program.getLocalSymbolTable().getAddressLocalOrGlobal(label);
-                     RegisterFile.updateRegister(operands[0], byteAddress);
-
-                     try
-                        {
-                           ch = (char) Globals.memory.getByte(byteAddress);
-                                             // won't stop until NULL byte reached!
-                           while (ch != 0)
-                           {
-                              SystemIO.printString(new Character(ch).toString());
-                              byteAddress++;
-                              ch = (char) Globals.memory.getByte(byteAddress);
-                           }
-                        } 
-                           catch (AddressErrorException e)
-                           {
-                              throw new ProcessingException(statement, e);
-                           }
-                     
-                  }
-                           
-               }));
-         instructionList.add(
-                new BasicInstruction("bne $t1,$t2,label",
-                "Branch if not equal : Branch to statement at label's address if $t1 and $t2 are not equal",
-            	 BasicInstructionFormat.I_BRANCH_FORMAT,
-                "000100 fffff sssss tttttttttttttttt",
-                new SimulationCode()
-               {
-                   public void simulate(ProgramStatement statement) throws ProcessingException
-                  {
-                     int[] operands = statement.getOperands();
-                  
-                     if (RegisterFile.getValue(operands[0])
-                        != RegisterFile.getValue(operands[1]))
-                     {
-                        Globals.instructionSet.processBranch(operands[2]);
-                     }
-                  }
-               }));
+         }));
     }
 }
