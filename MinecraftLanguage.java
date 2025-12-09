@@ -90,10 +90,10 @@ public class MinecraftLanguage extends CustomAssembly{
               }
             }));
       instructionList.add(
-         new BasicInstruction("give $t1, imm",
+         new BasicInstruction("give $t1, $zero, imm",
          "takes minecraft item id (imm) and loads them into your hotbar slot",
          BasicInstructionFormat.I_FORMAT,
-         "000100 01001 00000 0000000000000000",
+         "000100 00000 ttttt iiiiiiiiiiiiiiii",
          new SimulationCode()
          {
                public void simulate(ProgramStatement statement) throws ProcessingException
@@ -101,7 +101,7 @@ public class MinecraftLanguage extends CustomAssembly{
                int[] operands = statement.getOperands();
                
                //get the item id as a immediate value
-               int item_id = operands[1]; // immediate
+               int item_id = operands[2]; // immediate
                //Store item id directly into that register
                RegisterFile.updateRegister(operands[0], item_id);
                System.out.println("Gave item with ID: " + item_id + " to hotbar slot.");
@@ -137,8 +137,8 @@ public class MinecraftLanguage extends CustomAssembly{
       instructionList.add(
          new BasicInstruction("switch $t1", 
          "switch to the wanted hotbar slot $t1-$t9",
-         BasicInstructionFormat.J_FORMAT,
-         "000110 01001 00000 0000000000000000",
+         BasicInstructionFormat.R_FORMAT,
+         "000110 01001 00000 00000 00000 000000",
          new SimulationCode()
          {
             public void simulate(ProgramStatement statement) throws ProcessingException
@@ -191,6 +191,7 @@ public class MinecraftLanguage extends CustomAssembly{
                for (int reg : hotbarRegs) {
                   RegisterFile.updateRegister(reg,0);
                }
+               System.out.println("Cleared all items from inventory.");
             }
          }));
       instructionList.add(
@@ -224,7 +225,7 @@ public class MinecraftLanguage extends CustomAssembly{
       instructionList.add(
          new BasicInstruction("walk imm",
          "walks forward for imm amount of time (press w)",
-         BasicInstructionFormat.J_FORMAT,
+         BasicInstructionFormat.I_FORMAT,
          "100001 00000 00000 0000000000000000",
          new SimulationCode()
             {
@@ -250,7 +251,7 @@ public class MinecraftLanguage extends CustomAssembly{
       instructionList.add(
          new BasicInstruction("run imm",
          "runs forward for imm amount of time (press w and control)",
-         BasicInstructionFormat.J_FORMAT,
+         BasicInstructionFormat.I_FORMAT,
          "100011 00000 00000 0000000000000000",
          new SimulationCode()
             {
@@ -264,7 +265,7 @@ public class MinecraftLanguage extends CustomAssembly{
       instructionList.add(
          new BasicInstruction("eat imm",
          "eats food in hand for imm amount of seconds",
-         BasicInstructionFormat.J_FORMAT,
+         BasicInstructionFormat.I_FORMAT,
          "100100 00000 00000 0000000000000000",
          new SimulationCode()
             {
@@ -278,7 +279,7 @@ public class MinecraftLanguage extends CustomAssembly{
       instructionList.add(
          new BasicInstruction("swim imm",
          "swim forward for imm amount of seconds",    
-         BasicInstructionFormat.J_FORMAT,
+         BasicInstructionFormat.I_FORMAT,
          "100101 00000 00000 0000000000000000",
          new SimulationCode()
             {
@@ -292,7 +293,7 @@ public class MinecraftLanguage extends CustomAssembly{
       instructionList.add(
          new BasicInstruction("break imm",
          "mines block in front of player for imm amount of seconds",
-         BasicInstructionFormat.J_FORMAT,
+         BasicInstructionFormat.I_FORMAT,
          "100110 00000 00000 0000000000000000",
          new SimulationCode()
             {
@@ -318,7 +319,7 @@ public class MinecraftLanguage extends CustomAssembly{
       instructionList.add(
          new BasicInstruction("clmb imm",
          "goes up ladder for imm amount of seconds",
-         BasicInstructionFormat.J_FORMAT,
+         BasicInstructionFormat.I_FORMAT,
          "101000 00000 00000 0000000000000000",
          new SimulationCode()
             {
@@ -332,21 +333,21 @@ public class MinecraftLanguage extends CustomAssembly{
       instructionList.add(
          new BasicInstruction("atck imm",
          "attacks entity in front of player for imm amount of clicks",
-         BasicInstructionFormat.J_FORMAT,
+         BasicInstructionFormat.I_FORMAT,
          "101001 00000 00000 0000000000000000",
          new SimulationCode()
             {
                public void simulate(ProgramStatement statement) throws ProcessingException
                {
                   int[] operands = statement.getOperands();
-                  int time = operands[0]; // immediate
-                  System.out.println("Attacking entity for " + time + " clicks.");
+                  int clicks = operands[0]; // immediate
+                  System.out.println("Attacking entity for " + clicks + " clicks.");
                   }
          }));
       instructionList.add(
          new BasicInstruction("turn imm",
             "rotate the player's view by imm of degrees",
-            BasicInstructionFormat.J_FORMAT,
+            BasicInstructionFormat.I_FORMAT,
             "101010 00000 00000 0000000000000000",
             new SimulationCode() 
             {

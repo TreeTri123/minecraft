@@ -1,62 +1,35 @@
-# mydragonball.asm - Using Dragon Ball Assembly custom language
-.data
-newline: .asciiz "\n"
-forward_msg: .asciiz "FORWARD ATTACK!\n"
-jump_msg: .asciiz "INSTANT TRANSMISSION!\n"
+# switch hand to hotbar 5
+switch $t1
 
-.text
-.globl main
+# load a cookie into hotbar slot 5
+give $t1, 357
 
-main:
-    # Initialize power level
-    li $t0, 0
-    
-loop:
-    # Increase power level with pow (Power up)
-    pow $t0, 5
-    
-    # Check if power is strong enough with it (Instant Transmission - conditional jump)
-    it $t0, do_jump
-    
-    # If not strong enough, output forward command
-    li $v0, 1
-    li $a0, 1
-    syscall
-    
-    # Print newline
-    li $v0, 4
-    la $a0, newline
-    syscall
-    
-    # Delay
-    li $t1, 4000000
-delay1:
-    addi $t1, $t1, -1
-    bnez $t1, delay1
-    
-    j loop
-    
-do_jump:
-    # Power is high enough - output jump command
-    li $v0, 1
-    li $a0, 2
-    syscall
-    
-    # Print newline
-    li $v0, 4
-    la $a0, newline
-    syscall
-    
-    # Use Kaioken to boost power further
-    kai $t0, $t1
-    
-    # Delay
-    li $t1, 4000000
-delay2:
-    addi $t1, $t1, -1
-    bnez $t1, delay2
-    
-    # Reset power level
-    li $t0, 0
-    
-    j loop
+#drop item in hand
+drop $t1, $t1, 1
+
+#walk forward
+walk 1
+
+#eat 
+eat 3
+
+#give wool 
+give $t1, 35
+#give flower
+give $t2, 38
+#give cactus
+give $t3, 81
+
+#clear Inventory
+clear
+
+#jump
+jump
+
+#walk
+walk 2
+
+#break block
+break 4
+
+
