@@ -11,6 +11,5 @@ main:
 	# double the amount of cookies 
 	itmmul $t5, $t5, 2
 
-	eat 
-	eat 
-	eat	
+	eat 5
+
